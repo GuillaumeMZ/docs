@@ -67,7 +67,7 @@ let x = 12.333
 let y = 13. (* le . est nécessaire pour ne pas confondre avec un entier *)
 ```
 
-### Écriture des nombre
+### Écriture des nombres
 
 * Pour plus de lisibilité, on peut "aérer" les nombres avec des `_`:
 
@@ -123,6 +123,14 @@ Il est possible de stocker des caractères **Unicode** dans une chaîne avec l'�
 ```ocaml
 let s = "\u{207A}"
 ```
+
+## Opérations mathématiques
+
+Les opérateurs mathématiques **diffèrent en fonction de si les opérateurs sont des entiers ou des flottants** !
+
+### Sur des entiers
+
+### Sur des flottants
 
 ## Les types composés
 
@@ -189,10 +197,92 @@ Il est possible d'extraire des éléments d'un array à l'aide d'un pattern:
 ```ocaml
 let [|_;a;b;_|] = [|1;2;3;4|]
 (* a = 2 et b = 3 *)
+```
+Mais il n'est pas possible d'extraire une partie du tableau comme avec les listes.
+
+## Les types personnalisés
+
+### Les variants (type somme)
+
+Les **variants** sont des énumérations dont les valeurs peuvent être paramétrées.
+
+```ocaml
+type mon_type = (* le nom du variant doit commencer par une minuscule *)
+    | A (* les noms des valeurs doivent commencer par une majuscule *)
+    | B of int (* une valeur paramétrée *) 
+    | C of int * string (* une valeur paramétrée avec plusieurs types, pas un tuple ! *)
+    | C2 of (int * string) (* un tuple ! *)
+    | D of {x: int} (* une valeur paramétrée par un record *)
+```
+Pour initialiser une variable:
+
+```ocaml
+let x = A
+let y = B 12
+let z = C (12, "12") (* parenthèses nécessaires ! *)
+let z2 = C2 (12, "12")
+let a = D {x = 12}
+```
+
+Les variants peuvent être paramétrés par des types génériques:
+
+```ocaml
+type 'a option = 
+    | Some of 'a
+    | None
+```
+##### Un exemple d'implémentation du type option présent dans la bibliothèque standard d'OCaml.
+
+Lorsqu'il y a plusieurs types génériques, on les déclare de la manière suivante:
+```ocaml
+type ('a, 'b) double_option = (* les () sont nécessaires ! *)
+    | Some of 'a * 'b
+    | None
+```
+##### Pas très utile...
+
+### Les records (type produit)
+
+Les **records** sont des types structurés.
+
+```ocaml
+type point2d = { (* le nom du record doit commencer par une minuscule *)
+    x: int; (* le nom d'un champ doit commencer par une minuscule *)
+    y: int (* le ; du dernier champ est optionnel *)
+}
+```
+##### Création d'un record.
+
+L'instanciation d'un record se fait de la manière suivante:
+```ocaml
+let p = {
+    x = 12;
+    y = 13 (* le ; du dernier champ est toujours optionnel *)
+}
+```
+
+On peut accéder aux champs individuellement avec la notation `.`:
+```ocaml
+let x1 = p.x
+```
+
+Enfin, les records peuvent contenir des champs modifiables, marqués `mutable`:
+```ocaml
+type a = {
+    mutable x: int
+}
+```
+
+On les met à jour avec la flèche `<-`:
+```ocaml
+let l = {x = 12}
+l.x <- 13 (* mise à jour du champ x de l *)
+```
 
 ## Ressources
 
 * [Site officiel](https://v2.ocaml.org/manual/)
+* [Spécification officielle](https://v2.ocaml.org/manual/language.html)
 * [Cheat sheets officiels](https://github.com/OCamlPro/ocaml-cheat-sheets)
 * [RealWorldOCaml](https://dev.realworldocaml.org)
 * [DLDC OCaml](https://www2.lib.uchicago.edu/keith/ocaml-class)
