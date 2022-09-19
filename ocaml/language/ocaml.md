@@ -76,7 +76,7 @@ let n = 1_000_000
 let o = 12_345.67_8_9
 ```
 
-* Les **entiers** peuvent être exprimés dans différentes bases:
+* Les nombres entiers peuvent être exprimés dans différentes bases:
 
 ```ocaml
 let p = 0x123F (* hexadécimal *)
@@ -85,6 +85,8 @@ let r = 0b1011 (* binaire *)
 ```
 
 avec `x`, `o`, et `b` pouvant être aussi en majuscule.
+
+# TODO: parler des réels
 
 ### Les booléens
 
@@ -124,13 +126,81 @@ Il est possible de stocker des caractères **Unicode** dans une chaîne avec l'�
 let s = "\u{207A}"
 ```
 
-## Opérations mathématiques
+L'opérateur `^` permet de concaténer deux chaînes de caractères:
+```ocaml
+let abcd = "ab" ^ "cd" (* abcd = "abcd" *)
+``` 
+
+## Les opérateurs
 
 Les opérateurs mathématiques **diffèrent en fonction de si les opérateurs sont des entiers ou des flottants** !
 
-### Sur des entiers
+### Opérateurs mathématiques sur des entiers
 
-### Sur des flottants
+`+`, `-`, `*`, `/`, `mod` (infixe)  
+`+`, `-` (unaires)
+
+### Opérateurs mathématiques sur des flottants
+
+`+.`, `-.`, `*.`, `/.` (infixe), `**` (puissance)  
+`+.`, `-.` (unaires)
+
+### Opérateurs logiques
+
+`&&` (short-circuit), `||` (short-circuit), `not`
+
+### Opérateurs de comparaison
+
+|Opérateur|Commentaire|
+|---------|-----------|
+|=|Teste l'**égalité structurelle**, c'est-à-dire l'égalité des contenus.|
+|<>|Négation de =|
+|<=, <, >, >=|Teste l'**inégalité structurelle**.|
+|==|Teste l'**égalité physique**, c'est-à-dire l'égalité de références.|
+|!=|Inverse de ==|
+
+### Opérateurs d'application
+
+L'opérateur `|>` est l'opérateur d'**application inverse**: écrire:
+```
+x |> f |> g
+```
+est équivalent à:
+```
+g (f x)
+```
+
+L'opérateur `@@` est l'opérateur d'**application**: écrire:
+```
+g @@ f @@ x
+```
+est équivalent à:
+```
+g (f x)
+```
+
+## Les conditions
+
+En OCaml, les conditions s'écrivent avec les mots-clés `if`, `then` et `else`:
+
+```ocaml
+let x = ...
+let y = ...
+
+if x < y then
+    ...
+else (* le else est obligatoire ! *)
+    ...
+```
+
+Un `else` peut être suivi d'une autre condition afin de former une condition alternative.
+
+Une condition étant une expression, il est possible d'en récupérer une valeur:
+```ocaml
+let a = if condition then 1 else 2
+```
+
+**Les types retournés dans les différentes branches doivent être identiques !**
 
 ## Les types composés
 
@@ -235,11 +305,21 @@ type 'a option =
 
 Lorsqu'il y a plusieurs types génériques, on les déclare de la manière suivante:
 ```ocaml
-type ('a, 'b) double_option = (* les () sont nécessaires ! *)
+type ('a, 'b) double_option = (* les () et les , sont nécessaires ! *)
     | Some of 'a * 'b
     | None
 ```
 ##### Pas très utile...
+
+Il est possible de déstructurer des variants pour récupérer le contenu.
+```ocaml
+type mon_variant = 
+    | A of int
+    | B of string * string
+
+let A(x) = A 12 (* x = 12 *)
+let B(_, y) = B ("abcd", "efgh") (* y = "efgh" *)
+```
 
 ### Les records (type produit)
 
@@ -278,6 +358,22 @@ On les met à jour avec la flèche `<-`:
 let l = {x = 12}
 l.x <- 13 (* mise à jour du champ x de l *)
 ```
+
+Comme pour les variants, on peut tout à fait déstructurer un record avec un pattern:
+
+```ocaml
+
+```
+
+## Exceptions
+
+## Pattern matching
+
+## Fonctions
+
+## Modules
+
+**Le module [Pervasives](https://v2.ocaml.org/releases/4.02/htmlman/libref/Pervasives.html) est le module ouvert de base.**
 
 ## Ressources
 
