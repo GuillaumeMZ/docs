@@ -1,7 +1,7 @@
 # OCaml
 Langage statiquement, fortement typé, fonctionnel avec support de l'orienté objet.
 
-## Commentaires
+# Commentaires
 
 ```ocaml
 (* Un commentaire sur une ligne. *)
@@ -11,11 +11,11 @@ plusieurs lignes *)
 (* Un commentaire (* contenu dans *) un autre. *)
 ```
 
-## Identifieurs
+# Identifieurs
 
 Parler de _
 
-## Variables
+# Variables
 
 Utilisation du mot-clé `let` pour la création d'une variable:
 
@@ -46,9 +46,9 @@ Il est évidemment possible de combiner plusieurs blocs `in` les uns dans les au
 
 # Les variables sont **immutables** !!!
 
-## Les types fondamentaux
+# Les types fondamentaux
 
-### Les entiers
+## Les entiers
 
 Le type `int` représente des entiers relatifs codés en complément à 2. Ils prennent:
 * **31** bits (et pas 32 !) sur les processeurs 32 bits.
@@ -56,18 +56,18 @@ Le type `int` représente des entiers relatifs codés en complément à 2. Ils p
 
 ##### En l'occurence, un seul bit est réservé par OCaml pour déterminer si la valeur est un nombre "normal" ou un pointeur.
 
-### Les réels
+## Les réels
 
 Le type `float` représente des réels relatifs codés suivant la norme *IEEE 754* (précision double).
 
-#### (Il existe toutefois les modules `Int32` et `Int64` pour représenter des entiers natifs).
+##### (Il existe toutefois les modules `Int32` et `Int64` pour représenter des entiers natifs).
 
 ```ocaml
 let x = 12.333
 let y = 13. (* le . est nécessaire pour ne pas confondre avec un entier *)
 ```
 
-### Écriture des nombres
+## Écriture des nombres
 
 * Pour plus de lisibilité, on peut "aérer" les nombres avec des `_`:
 
@@ -88,11 +88,11 @@ avec `x`, `o`, et `b` pouvant être aussi en majuscule.
 
 # TODO: parler des réels
 
-### Les booléens
+## Les booléens
 
 Le type `bool` représente une valeur qui est soit vraie (`true`) soit fausse (`false`).
 
-### Les caractères
+## Les caractères
 
 Le type `char` permet de représenter un caractère suivant le charset ISO-8859-1. Un `char` occupe un octet.
 
@@ -112,7 +112,7 @@ Certains caractères peuvent être échappés avec `\`:
 |`\"`|Guillemet double|
 |`\\`|Antislash|
 
-### Les chaînes de caractères
+## Les chaînes de caractères
 
 Le type `string` représente une suite de caractères (`char`) sous la forme d'un `array`. Une `string` est donc mutable !
 
@@ -131,25 +131,25 @@ L'opérateur `^` permet de concaténer deux chaînes de caractères:
 let abcd = "ab" ^ "cd" (* abcd = "abcd" *)
 ``` 
 
-## Les opérateurs
+# Les opérateurs
 
 Les opérateurs mathématiques **diffèrent en fonction de si les opérateurs sont des entiers ou des flottants** !
 
-### Opérateurs mathématiques sur des entiers
+## Opérateurs mathématiques sur des entiers
 
 `+`, `-`, `*`, `/`, `mod` (infixe)  
 `+`, `-` (unaires)
 
-### Opérateurs mathématiques sur des flottants
+## Opérateurs mathématiques sur des flottants
 
 `+.`, `-.`, `*.`, `/.` (infixe), `**` (puissance)  
 `+.`, `-.` (unaires)
 
-### Opérateurs logiques
+## Opérateurs logiques
 
 `&&` (short-circuit), `||` (short-circuit), `not`
 
-### Opérateurs de comparaison
+## Opérateurs de comparaison
 
 |Opérateur|Commentaire|
 |---------|-----------|
@@ -159,7 +159,7 @@ Les opérateurs mathématiques **diffèrent en fonction de si les opérateurs so
 |==|Teste l'**égalité physique**, c'est-à-dire l'égalité de références.|
 |!=|Inverse de ==|
 
-### Opérateurs d'application
+## Opérateurs d'application
 
 L'opérateur `|>` est l'opérateur d'**application inverse**: écrire:
 ```
@@ -179,7 +179,7 @@ est équivalent à:
 g (f x)
 ```
 
-## Les conditions
+# Les conditions
 
 En OCaml, les conditions s'écrivent avec les mots-clés `if`, `then` et `else`:
 
@@ -202,9 +202,9 @@ let a = if condition then 1 else 2
 
 **Les types retournés dans les différentes branches doivent être identiques !**
 
-## Les types composés
+# Les types composés
 
-### Les listes
+## Les listes
 
 Le type `list` représente une collection **immutable** d'éléments **du même type** sous la forme d'une liste simplement chaînée.
 
@@ -235,7 +235,7 @@ let [1;x;_] =  [1;2;3]
 (* x = 2 *)
 ```
 
-### Les tuples
+## Les tuples
 
 Un tuple est une collection immutable d'éléments de types **qui peuvent être différents**:
 
@@ -252,7 +252,7 @@ let (x, _) = (1, 2)
 (* x = 1 *)
 ```
 
-### Les arrays
+## Les arrays
 
 Les arrays sont des tableaux d'éléments **mutables** du même type sous la forme d'une zone de mémoire continue.
 
@@ -270,12 +270,13 @@ let [|_;a;b;_|] = [|1;2;3;4|]
 ```
 Mais il n'est pas possible d'extraire une partie du tableau comme avec les listes.
 
-## Les types personnalisés
+# Les types personnalisés
 
-### Les variants (type somme)
+## Les variants (type somme)
+
+TODO: parler des variants récursifs
 
 Les **variants** sont des énumérations dont les valeurs peuvent être paramétrées.
-
 ```ocaml
 type mon_type = (* le nom du variant doit commencer par une minuscule *)
     | A (* les noms des valeurs doivent commencer par une majuscule *)
@@ -285,7 +286,6 @@ type mon_type = (* le nom du variant doit commencer par une minuscule *)
     | D of {x: int} (* une valeur paramétrée par un record *)
 ```
 Pour initialiser une variable:
-
 ```ocaml
 let x = A
 let y = B 12
@@ -295,7 +295,6 @@ let a = D {x = 12}
 ```
 
 Les variants peuvent être paramétrés par des types génériques:
-
 ```ocaml
 type 'a option = 
     | Some of 'a
@@ -318,13 +317,14 @@ type mon_variant =
     | B of string * string
 
 let A(x) = A 12 (* x = 12 *)
-let B(_, y) = B ("abcd", "efgh") (* y = "efgh" *)
+let B(_, y, "ijkl") = B ("abcd", "efgh", "ijkl") (* y = "efgh" *)
 ```
 
-### Les records (type produit)
+## Les records (type produit)
+
+TODO: parler de la mise un jour d'un record avec with
 
 Les **records** sont des types structurés.
-
 ```ocaml
 type point2d = { (* le nom du record doit commencer par une minuscule *)
     x: int; (* le nom d'un champ doit commencer par une minuscule *)
@@ -340,6 +340,8 @@ let p = {
     y = 13 (* le ; du dernier champ est toujours optionnel *)
 }
 ```
+On notera que l'on a pas précisé le type de `p`. En effet, OCaml est capable de le retrouver à partir des noms des champs (ici `x` et `y`). Cependant, lorsque plusieurs *records* ont des attributs en commun, OCaml va essayer de déterminer le type en regardant quels champs sont utilisés. S'il n'y a pas assez d'informations, 
+
 
 On peut accéder aux champs individuellement avec la notation `.`:
 ```ocaml
@@ -359,23 +361,57 @@ let l = {x = 12}
 l.x <- 13 (* mise à jour du champ x de l *)
 ```
 
+### Déstructuration d'un record et *field punning*
+
 Comme pour les variants, on peut tout à fait déstructurer un record avec un pattern:
-
 ```ocaml
+(* record de test *)
+type un_record = {
+    a: int;
+    b: string;
+    c: char
+}
 
+let r = {a = 12; b = "abcd"; c = 'a'}
+let {a = _; b = str; c = 'a'} = r (* str == "abcd" *)
 ```
 
-## Exceptions
+On peut aussi remplacer la dernière ligne du code précédent par:
+```ocaml
+let {b=str;_} = r
+```
+où `_` permet de dire explicitement: "on ignore tous les autres champs". `_` **doit être placé en dernier**. On peut aussi tout simplement ne pas mettre `_` et dans ce cas, tous les champs non présents dans la déstructuration seront ignorés.
+```ocaml
+let {b=str} = r (* fonctionne aussi ! *)
+```
 
-## Pattern matching
+Imaginons maintenant que nous voulions extraire un (ou plusieurs) champ d'un record dans une (ou plusieurs) variable du même nom. Cela s'écrirait:
+```ocaml
+let r = {a = 12; b = "abcd"; c = 'a'}
+let {a = a; b = b; _} (* a == 12 et b == "abcd" *)
+```
+OCaml propose une simplification de l'écriture dans ce cas: il n'y a plus besoin de lier la variable avec le champ que l'on veut récupérer puisqu'ils ont le même nom.
+```ocaml
+let r = {a = 12; b = "abcd"; c = 'a'}
+let {a;b;_} (* même effet que la dernière ligne du code précédent *)
+```
+Cette simplification s'appelle le *field punning*.
 
-## Fonctions
+# Exceptions
 
-## Modules
+# Pattern matching
+
+# Fonctions
+
+# Modules
 
 **Le module [Pervasives](https://v2.ocaml.org/releases/4.02/htmlman/libref/Pervasives.html) est le module ouvert de base.**
 
-## Ressources
+# Essayer OCaml
+
+[Essayer OCaml en ligne](https://try.ocamlpro.com/) (nécessite une connexion Internet).
+
+# Ressources
 
 * [Site officiel](https://v2.ocaml.org/manual/)
 * [Spécification officielle](https://v2.ocaml.org/manual/language.html)
