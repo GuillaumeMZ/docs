@@ -219,7 +219,7 @@ Il est aussi possible d'écrire une liste avec l'opérateur `::` (associatif à 
 let l = 1 :: 2 :: 3 :: []
 ```
 
-Il est aussi possible d'utiliser l'opérateur `::` pour **déstructurer** une liste:
+L'opérateur `::` permet également de **déstructurer** une liste:
 
 ```ocaml
 let hd :: tl = [1;2;3]
@@ -228,11 +228,16 @@ let hd :: tl = [1;2;3]
 
 **Attention**: la déstructuration échouera si elle est appliquée sur une liste vide ! L'opérateur `::` est donc un pattern **non exhaustif**.
 
-Enfin, on peut extraire un élement précis d'une liste en la reproduisant:
+On peut extraire un élement précis d'une liste également avec une déstructuration:
 
 ```ocaml
 let [1;x;_] =  [1;2;3]
 (* x = 2 *)
+```
+
+La concaténation de deux listes s'effectue avec l'opérateur `@`:
+```ocaml
+let l = [1;2;3] @ [4;5;6] (* l == [1;2;3;4;5;6] *)
 ```
 
 ## Les tuples
@@ -285,7 +290,7 @@ type mon_type = (* le nom du variant doit commencer par une minuscule *)
     | C2 of (int * string) (* un tuple ! *)
     | D of {x: int} (* une valeur paramétrée par un record *)
 ```
-Pour initialiser une variable:
+Pour créer une instance d'un variant:
 ```ocaml
 let x = A
 let y = B 12
@@ -322,7 +327,7 @@ let B(_, y, "ijkl") = B ("abcd", "efgh", "ijkl") (* y = "efgh" *)
 
 ## Les records (type produit)
 
-TODO: parler de la mise un jour d'un record avec with
+TODO: parler de la mise un jour d'un record avec with & des variants génériques & du type d'un variant générique
 
 Les **records** sont des types structurés.
 ```ocaml
@@ -397,7 +402,70 @@ let {a;b;_} (* même effet que la dernière ligne du code précédent *)
 ```
 Cette simplification s'appelle le *field punning*.
 
-# Exceptions
+# Gestion des erreurs
+
+OCaml propose plusieurs mécanismes pour gérer les erreurs:
+
+## Le type `result`
+
+Le module [Stdlib](https://v2.ocaml.org/api/Stdlib.html) d'OCaml définit le type somme `result` de la manière suivante:
+```ocaml
+type ('a, 'b) result =
+  | Ok of 'a
+  | Error of 'b
+```
+Il peut donc être utilisé comme type de retour d'une fonction qui peut échouer.
+```ocaml
+(* Cette fonction échoue si x > 50, sinon renvoie x * 2 *)
+let f x = 
+    if x > 50 then Error "x doit être inférieur ou égal à 50 !"
+    else Ok (x * 2)
+
+let x = f 24 (* Ok 48 *)
+let y = f 51 (* Error "..." *)
+(* Utiliser le pattern matching pour vérifier la réussite (ou l'échec) *)
+```
+
+## Les exceptions
+
+OCaml propose également des exceptions équivalentes à celles que l'on peut trouver dans des langages comme C++, Java, Python, etc.
+
+Les exceptions ont toutes un seul type: le type somme `exn`. Il est possible de créer ses propres exceptions (paramétrées ou non) avec le mot-clé `exception`:
+```ocaml
+exception Foo (* exception non paramétrée *)
+exception Bar of int (* exception à 1 paramètre *)
+exception Baz of string * string (* exception à 2 paramètres *)
+exception Quux = Baz (* renommage d'une exception, Quux et Baz ont les mêmes paramètres *)
+```
+##### Dans cet exemple, `Foo`, `Bar` et `Baz` viennent donc compléter (et sont de type) `exn`.  
+
+Une fois l'exception créée, on peut la lever avec la fonction `raise`:
+```ocaml
+let f x = 
+    if x > 100 then raise Foo
+    else if x > 75 then raise (Bar 12) 
+    else if x > 50 then raise (Baz ("abcd", "efgh"))
+    else x * 2
+```
+##### La présence d'exceptions n'influe pas sur le type de la fonction; ici, `f` est toujours de type `int -> int`.
+Dans le code appelant, on utilise un bloc `try` avec un filtrage pour associer une exception à une action:
+```ocaml
+let x = try (f 76) with
+  | Foo -> -1 (* le premier | est optionnel *)
+  | Bar(x) -> -x
+  | _ -> -1000 (* le _ agit comme un cas par défaut, c'est-à-dire tout ce qui n'a pas été matché précédemment *)
+```
+Le bloc `try` est une expression qui renvoie le type de l'expression testée (entre `try` et `with`). On sépare les cas avec `|`.
+
+## Les assertions
+
+Le mot-clé `assert` permet de vérifier des expressions booléennes et lâche une exception `Assert_failure` si la condition n'est pas respectée.
+```ocaml
+let sqrt x = 
+    assert (x >= 0.) (* vérification de la précondition x >= 0. pour le calcul de la racine *)
+    ...
+```
+Contrairement à d'autres langages, il n'est pas possible de fournir un message d'erreur personnalisé affiché lors de l'échec de l'assertion.
 
 # Pattern matching
 
@@ -406,6 +474,10 @@ Cette simplification s'appelle le *field punning*.
 # Modules
 
 **Le module [Pervasives](https://v2.ocaml.org/releases/4.02/htmlman/libref/Pervasives.html) est le module ouvert de base.**
+
+# Fonctionnalités impératives
+
+# Interfaçage avec le C 
 
 # Essayer OCaml
 
