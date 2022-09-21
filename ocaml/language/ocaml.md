@@ -469,6 +469,46 @@ Contrairement à d'autres langages, il n'est pas possible de fournir un message 
 
 # Pattern matching
 
+Le *pattern matching* est l'une des fonctionnalités les plus intéressantes d'OCaml. Il permet d'analyser la structure d'une expression et de récupérer ses composants. On utilise la forme `match <expression> with` pour effectuer un pattern matching sur `expression`:
+```ocaml
+let t = (1, 2, 3)
+let sum = match t with
+    | (x, y, z) -> x + y + z (* cas appellé si t est un tuple de trois entiers *)
+    | _ -> 0 (* cas par défaut *)
+```
+##### Un pattern matching étant une expression, on peut en récupérer une valeur. Ici, on stocke le résultat du *matching* dans `sum`.
+
+On sépare les cas avec le caractère `|` et la flèche `->` sert à associer un *pattern* avec une action.  
+Les patterns pouvant être utilisés sont:
+* des constantes (de types primitifs mais aussi composés)
+* tous les patterns de déconstruction vus jusqu'ici (listes, variants, records, etc.)
+* un pattern d'alias: le mot-clé `as` permet de renommer une expression.
+```ocaml
+let paire = (1, 2)
+let f p = match p with
+    | (_, _) as s -> s
+    | _ -> (0, 0)
+```
+Ce code teste `p` et s'il s'agit d'une paire d'entiers alors on la renvoie sans la modifier, sinon on renvoie la paire `(0, 0)`.
+On pourrait le réécrire en
+```ocaml
+ let paire = (1, 2)
+let f p = match p with
+    | (x, y) -> (x, y)
+    | _ -> (0, 0)
+```
+mais ce dernier code est moins efficace que le premier puisqu'on déconstruit la paire dans le premier pattern puis on la reconstruit dans la branche associée.  
+Le pattern `as` peut être utilisé en dehors d'un pattern matching.
+
+* un pattern "ou exclusif": il permet tout simplement de lier plusieurs patterns à une seule action associée.
+```ocaml
+match chiffre with
+    | 0 | 3 | 6 | 9 -> print_string "chiffre multiple de 3"
+    | 1 | 2 | 4 | 5 | 7 | 8 -> print_string "chiffre pas multiple de 3"
+    | _ -> print_string "pas un chiffre"
+```
+* un pattern d'exception 
+
 # Fonctions
 
 # Modules
@@ -489,4 +529,4 @@ Contrairement à d'autres langages, il n'est pas possible de fournir un message 
 * [Spécification officielle](https://v2.ocaml.org/manual/language.html)
 * [Cheat sheets officiels](https://github.com/OCamlPro/ocaml-cheat-sheets)
 * [RealWorldOCaml](https://dev.realworldocaml.org)
-* [DLDC OCaml](https://www2.lib.uchicago.edu/keith/ocaml-class)
+* [Cours de l'université de Chicago](https://www2.lib.uchicago.edu/keith/ocaml-class)
