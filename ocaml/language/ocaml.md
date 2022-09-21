@@ -279,7 +279,7 @@ Mais il n'est pas possible d'extraire une partie du tableau comme avec les liste
 
 ## Les variants (type somme)
 
-TODO: parler des variants récursifs
+TODO: parler des variants récursifs, des records inline
 
 Les **variants** sont des énumérations dont les valeurs peuvent être paramétrées.
 ```ocaml
@@ -498,7 +498,7 @@ let f p = match p with
     | _ -> (0, 0)
 ```
 mais ce dernier code est moins efficace que le premier puisqu'on déconstruit la paire dans le premier pattern puis on la reconstruit dans la branche associée.  
-Le pattern `as` peut être utilisé en dehors d'un pattern matching.
+**Le pattern `as` peut être utilisé en dehors d'un pattern matching.**
 
 * un pattern "ou exclusif": il permet tout simplement de lier plusieurs patterns à une seule action associée.
 ```ocaml
@@ -507,15 +507,24 @@ match chiffre with
     | 1 | 2 | 4 | 5 | 7 | 8 -> print_string "chiffre pas multiple de 3"
     | _ -> print_string "pas un chiffre"
 ```
-* un pattern d'exception 
+* un pattern d'exception: le pattern matching permet, comme le mot-clé `try`, d'attraper des exceptions si elles sont levées.
+```ocaml
+exception Foo of int
+let f x = 
+    if x > 50 then raise (Foo 12)
+    else x * 2
+
+match f 51 with
+    | x -> print_string "une valeur normale"
+    | exception Foo(x) -> print_int x
+```
+Comme dans un bloc `try with`, on peut récupérer le(s) paramètre(s) (si applicable) de l'exception via un pattern de déconstruction.
 
 # Fonctions
 
 # Modules
 
 **Le module [Pervasives](https://v2.ocaml.org/releases/4.02/htmlman/libref/Pervasives.html) est le module ouvert de base.**
-
-# Fonctionnalités impératives
 
 # Interfaçage avec le C 
 
@@ -530,3 +539,4 @@ match chiffre with
 * [Cheat sheets officiels](https://github.com/OCamlPro/ocaml-cheat-sheets)
 * [RealWorldOCaml](https://dev.realworldocaml.org)
 * [Cours de l'université de Chicago](https://www2.lib.uchicago.edu/keith/ocaml-class)
+* [CS3110, cours de l'université de Cornell](https://cs3110.github.io/textbook/cover.html)
