@@ -114,7 +114,7 @@ Certains caractères peuvent être échappés avec `\`:
 
 ## Les chaînes de caractères
 
-Le type `string` représente une suite de caractères (`char`) sous la forme d'un `array`. Une `string` est donc mutable !
+Le type `string` représente une suite de caractères (`char`) sous la forme d'un `array`.
 
 ```ocaml
 let s: string = "bonjour"
@@ -516,11 +516,78 @@ let f x =
 
 match f 51 with
     | x -> print_string "une valeur normale"
-    | exception Foo(x) -> print_int x
+    | exception Foo x -> print_int x
 ```
 Comme dans un bloc `try with`, on peut récupérer le(s) paramètre(s) (si applicable) de l'exception via un pattern de déconstruction.
 
 # Fonctions
+
+## Création d'une fonction
+
+La manière la plus simple d'écrire une fonction est
+```ocaml
+let nom param1 param2 param3 = 
+    expression
+```
+
+où `nom` représente le nom de la fonction et les `param` les différents paramètres.  
+Par exemple, une fonction qui renvoie la somme de ses deux paramètres s'écrit
+```ocaml
+let somme a b = a + b
+```
+Le contenu d'une fonction devant être une expression, il n'existe pas de mot-clé `return` ou équivalent.
+
+## Fonctions anonymes
+
+Il est aussi possible de créer des fonctions anonymes: il s'agit de fonctions sans nom qui sont généralement utilisées dans des appels de fonction.  
+La fonction `somme` de la section précédente peut donc s'écrire:
+```ocaml
+fun a b -> a + b
+```
+mais peut s'écrire aussi:
+```ocaml
+fun a -> fun b -> a + b
+```
+Ces deux écritures sont **strictement équivalentes**. La seconde forme semble inutilement complexe, mais nous y reviendrons dans la section traîtant de la notion de *currying*.  
+Une fonction (anonyme) étant une expression, il est possible de la stocker dans une variable:
+```ocaml
+let somme = fun a b -> a + b
+```
+
+## Type d'une fonction
+
+Le type de la fonction `somme` (qu'il s'agisse de l'écriture d'une fonction normale ou anonyme) est:
+```ocaml
+int -> int -> int (* déduit par le compilateur *)
+```
+Pour lire un type de cette forme, on commence par regarder le type après la dernière `->`: il s'agit du type de retour de la fonction. Les autres types sont, dans l'ordre, les types des paramètres.  
+Prenons l'exemple de la fonction suivante, qui commence par concaténer deux chaînes de caractères puis convertit le résultat en nombre:
+```ocaml
+let concat_and_convert a b =
+    let c = a ^ b in (* concaténation *)
+    int_of_string c (* conversion en entier *)
+```
+Le type de cette fonction est:
+```ocaml
+string -> string -> int
+```
+On commence par regarder le dernier type (`int`): il correspond au type de retour de la fonction. Ensuite, le premier type (`string`) correspond au type du premier paramètre (`a`) et le deuxième type (`string`) correspond au type du second paramètre (`b`).
+
+## Annotation manuelle des types des paramètres et de la valeur de retour
+
+Parfois, les types des paramètres et/ou du type de retour déduits par le compilateurs ne sont pas assez précis ou ne correspondent pas à ce que l'on attend. 
+
+## Le mot-clé `function`
+
+## Fonctions sans arguments et procédures
+
+## Fonctions récursives et *tail-call optimization*
+
+## Application partielle et notion de *currying*
+
+## Arguments nommés et arguments optionnels
+
+# Création d'opérateurs personnalisés
 
 # Modules
 
