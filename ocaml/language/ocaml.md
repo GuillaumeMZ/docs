@@ -557,6 +557,8 @@ let somme a b = a + b
 ```
 Le contenu d'une fonction devant être une expression, il n'existe pas de mot-clé `return` ou équivalent.
 
+## Utilisation d'une fonction
+
 ## Fonctions anonymes
 
 Il est aussi possible de créer des fonctions anonymes: il s'agit de fonctions sans nom qui sont généralement utilisées dans des appels de fonction.  
@@ -597,25 +599,22 @@ On commence par regarder le dernier type (`int`): il correspond au type de retou
 
 Parfois, les types des paramètres et/ou du type de retour déduits par le compilateurs ne sont pas assez précis ou ne correspondent pas à ce que l'on attend. Dans ce cas, on peut annoter la fonction pour préciser les types des paramètres et/ou le type de retour:
 ```ocaml
-let somme (a: int) (b: int) = (* les () sont obligatoires ! *)
-    a + b
+let somme (a: int) (b: int) = (* les () sont obligatoires ! *) a + b
 ```
 ##### Annotation des types des paramètres
 
 ```ocaml
-let somme a b : int = (* pas de () ici *)
-    a + b
+let somme a b : int = (* pas de () ici *) a + b
 ```
 ##### Annotation du type de retour
 
 ```ocaml
-let somme (a: int) (b: int) : int =
-    a + b
+let somme (a: int) (b: int) : int = a + b
 ```
 ##### Annotation des paramètres ET du type de retour
 
 Les mêmes principes s'appliquent pour les fonctions anonymes:
-
+ 
 * Pour la forme "simplifiée": 
 ```ocaml
 let somme = fun (a: int) (b: int) : int -> a + b
@@ -628,9 +627,50 @@ let somme = fun (a: int) -> fun (b: int) : int -> a + b
 
 ## Le mot-clé `function`
 
-## Fonctions sans arguments et procédures
+Le mot-clé `function` permet d'effectuer directement un pattern-matching sur le dernier argument de la fonction. Par exemple:
+```ocaml
+let prod_eq x = function
+  | (a, b) when a * b = x -> true
+  | _ -> false
+```
+la fonction `prod_eq` vérifie que le produit des deux éléments d'une paire d'entiers soit égal à `x`. La paire n'est pas présente explicitement dans la liste d'arguments puisqu'elle est introduite en tant que dernier argument par le mot-clé `function`. C'est sur ce paramètre qu'est effectué le *pattern matching* dans la fonction. On remarquera qu'on emploie pas dans ce cas la construction `match ... with`.
+
+## Fonctions sans argument et procédures
+
+### Fonctions sans argument
+
+Pour écrire une fonction qui ne prend pas d'argument, on utilisera le tuple vide (type `unit`) à la place des paramètres:
+```ocaml
+let f () =  (* définition de la fonction f *)
+    42
+```
+Lors de l'appel, on utilise également le tuple vide:
+```ocaml
+let i = f () (* appel de f avec les () pour signifier qu'il n'y a pas d'argument *)
+```
+
+### Procédures
+
+Une procédure est simplement une fonction qui ne renvoie pas d'argument, c'est-à-dire le tuple vide (comme par exemple les fonctions `print_*`). Il n'y a rien à faire de particulier lors de la définition de la **définition** de la fonction mais lors de l'appel, il faut matcher le résultat avec le tuple vide:
+```ocaml
+(* définition de la fonction *)
+let print_hello name = 
+  print_string ("Hello " ^ name)
+
+(* appel de la fonction *)
+let () = print_hello "Paul"
+```
 
 ## Fonctions récursives et *tail-call optimization*
+
+Pour écrire une fonction récursive en OCaml, on utilise le mot-clé `rec` entre `let` et le nom de la fonction:
+```ocaml
+let rec factorial n = 
+    if n = 0 then 1
+    else if n = 1 then n
+    else n * factorial (n - 1)
+```
+##### Calcul de la factorielle de `n`
 
 ## Application partielle et notion de *currying*
 
