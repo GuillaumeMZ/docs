@@ -1,6 +1,11 @@
 # OCaml
 Langage statiquement, fortement typé, fonctionnel avec support de l'orienté objet.
 
+# Essayer OCaml
+
+[Essayer OCaml en ligne](https://try.ocamlpro.com/) (nécessite une connexion Internet).
+
+
 # Commentaires
 
 ```ocaml
@@ -204,6 +209,8 @@ let a = if condition then 1 else 2
 
 # Les types composés
 
+TODO: parler de la copie des types composés et personnalisés
+
 ## Les listes
 
 Le type `list` représente une collection **immutable** d'éléments **du même type** sous la forme d'une liste simplement chaînée.
@@ -393,7 +400,7 @@ let {b=str} = r (* fonctionne aussi ! *)
 Imaginons maintenant que nous voulions extraire un (ou plusieurs) champ d'un record dans une (ou plusieurs) variable du même nom. Cela s'écrirait:
 ```ocaml
 let r = {a = 12; b = "abcd"; c = 'a'}
-let {a = a; b = b; _} (* a == 12 et b == "abcd" *)
+let {a = a; b = b; _} (* a = 12 et b = "abcd" *)
 ```
 OCaml propose une simplification de l'écriture dans ce cas: il n'y a plus besoin de lier la variable avec le champ que l'on veut récupérer puisqu'ils ont le même nom.
 ```ocaml
@@ -519,6 +526,19 @@ match f 51 with
     | exception Foo x -> print_int x
 ```
 Comme dans un bloc `try with`, on peut récupérer le(s) paramètre(s) (si applicable) de l'exception via un pattern de déconstruction.
+* Un pattern `when`: le pattern `when` permet d'ajouter une condition supplémentaire à un pattern. Par exemple, le code suivant permet de vérifier si le premier élément d'une paire est égal à une valeur passée en paramètre:
+```ocaml
+let is_first_element_x p x = match p with
+    (a, _) when a = x -> true
+  | _ -> false
+```
+Ce pattern permet de simplifier l'écriture de conditions, mais il a un défaut: lorsqu'il est utilisé, le compilateur n'est plus capable de vérifier que le pattern prenne bien en compte tous les cas. Par exemple:
+```ocaml
+let is_even x = match x with
+    _ when x mod 2 = 0 -> true
+  | _ when x mod 2 = 1 -> false
+```
+ce code détermine si un nombre passé en paramètre est pair ou non avec un pattern `when`. Bien que tous les cas soient pris en compte (soit le nombre est pair soit il ne l'est pas), le compilateur affiche un avertissement car il est possible selon lui que le pattern échoue (ce qui n'est pas le cas).
 
 # Fonctions
 
@@ -575,7 +595,36 @@ On commence par regarder le dernier type (`int`): il correspond au type de retou
 
 ## Annotation manuelle des types des paramètres et de la valeur de retour
 
-Parfois, les types des paramètres et/ou du type de retour déduits par le compilateurs ne sont pas assez précis ou ne correspondent pas à ce que l'on attend. 
+Parfois, les types des paramètres et/ou du type de retour déduits par le compilateurs ne sont pas assez précis ou ne correspondent pas à ce que l'on attend. Dans ce cas, on peut annoter la fonction pour préciser les types des paramètres et/ou le type de retour:
+```ocaml
+let somme (a: int) (b: int) = (* les () sont obligatoires ! *)
+    a + b
+```
+##### Annotation des types des paramètres
+
+```ocaml
+let somme a b : int = (* pas de () ici *)
+    a + b
+```
+##### Annotation du type de retour
+
+```ocaml
+let somme (a: int) (b: int) : int =
+    a + b
+```
+##### Annotation des paramètres ET du type de retour
+
+Les mêmes principes s'appliquent pour les fonctions anonymes:
+
+* Pour la forme "simplifiée": 
+```ocaml
+let somme = fun (a: int) (b: int) : int -> a + b
+```
+
+* Pour la forme décomposée: le type de retour est annoté sur la dernière fonction
+```ocaml
+let somme = fun (a: int) -> fun (b: int) : int -> a + b
+```
 
 ## Le mot-clé `function`
 
@@ -594,10 +643,6 @@ Parfois, les types des paramètres et/ou du type de retour déduits par le compi
 **Le module [Pervasives](https://v2.ocaml.org/releases/4.02/htmlman/libref/Pervasives.html) est le module ouvert de base.**
 
 # Interfaçage avec le C 
-
-# Essayer OCaml
-
-[Essayer OCaml en ligne](https://try.ocamlpro.com/) (nécessite une connexion Internet).
 
 # Ressources
 
