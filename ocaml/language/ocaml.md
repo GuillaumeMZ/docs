@@ -109,10 +109,10 @@ Certains caractères peuvent être échappés avec `\`:
 
 |Séquence|Signification|
 |--------|-------------|
-|`\n`|LF|
-|`\r`|CR|
+|`\n`|LF (aller à la ligne)|
+|`\r`|CR (retour en début de ligne)|
 |`\t`|Tabulation|
-|`\b`|Backspace|
+|`\b`|Retour arrière|
 |`\'`|Guillemet simple|
 |`\"`|Guillemet double|
 |`\\`|Antislash|
@@ -233,6 +233,11 @@ let hd :: tl = [1;2;3]
 ```
 `hd` récupère le premier élément (ici 1) et `tl` récupère la liste composée des autres éléments (ici `[2;3]`).
 
+Il est même possible d'utiliser `::` plusieurs fois dans une même déstructuration:
+```ocaml
+let first :: second :: third :: tl = [1;2;3;4;5]
+```
+
 **Attention**: la déstructuration échouera si elle est appliquée sur une liste vide ! L'opérateur `::` est donc un pattern **non exhaustif**.
 
 On peut extraire un élement précis d'une liste également avec une déstructuration:
@@ -252,10 +257,10 @@ let l = [1;2;3] @ [4;5;6] (* l == [1;2;3;4;5;6] *)
 Un tuple est une collection immutable d'éléments de types **qui peuvent être différents**:
 
 ```ocaml
-let t = (1, 'c', "abcd", 2)
+let t: (int * char * string * int) = (1, 'c', "abcd", 2)
 ```
 
-En OCaml, le type d'un tuple est `t1 * t2 * t3... * tn`. Dans l'exemple ci-dessus, le type de `t` est `int * char * string * int`.
+En OCaml, le type d'un tuple est `t1 * t2 * t3... * tn` où `tx` représente le type de l'élément n°`x`. Dans l'exemple ci-dessus, le type de `t` est `int * char * string * int`.
 
 Comme les listes, un tuple peut être déconstruit avec un pattern:
 
@@ -269,7 +274,7 @@ let (x, _) = (1, 2)
 Les arrays sont des tableaux d'éléments **mutables** du même type sous la forme d'une zone de mémoire continue.
 
 ```ocaml
-let a = [|1;2;3;4|] (* il ne s'agit pas d'une liste mais bien d'un array ! *)
+let a: int array = [|1;2;3;4|] (* il ne s'agit pas d'une liste mais bien d'un array ! *)
 let b = a.(0) (* accès à un élément, b vaut 1 *)
 a.(1) <- 12 (* modification du deuxième élément du tableau, a vaut maintenant [|1;12;3;4|] *)
 ```
@@ -286,7 +291,7 @@ Mais il n'est pas possible d'extraire une partie du tableau comme avec les liste
 
 ## Les variants (type somme)
 
-TODO: parler des variants récursifs, des records inline
+### Création et utilisation d'un variant
 
 Les **variants** sont des énumérations dont les valeurs peuvent être paramétrées.
 ```ocaml
@@ -295,16 +300,30 @@ type mon_type = (* le nom du variant doit commencer par une minuscule *)
     | B of int (* une valeur paramétrée *) 
     | C of int * string (* une valeur paramétrée avec plusieurs types, pas un tuple ! *)
     | C2 of (int * string) (* un tuple ! *)
-    | D of {x: int} (* une valeur paramétrée par un record *)
+    | D of {x: int} (* une valeur paramétrée par un record ("inline record" ) *)
 ```
 Pour créer une instance d'un variant:
 ```ocaml
-let x = A
+let x: mon_type = A (* précision du type *)
 let y = B 12
 let z = C (12, "12") (* parenthèses nécessaires ! *)
 let z2 = C2 (12, "12")
 let a = D {x = 12}
 ```
+
+### Déstructuration d'un variant
+
+Il est possible de déstructurer des variants pour récupérer le contenu.
+```ocaml
+type mon_variant = 
+    | A of int
+    | B of string * string
+
+let A(x) = A 12 (* x = 12 *)
+let B(_, y, "ijkl") = B ("abcd", "efgh", "ijkl") (* y = "efgh" *)
+```
+
+### Variants génériques
 
 Les variants peuvent être paramétrés par des types génériques:
 ```ocaml
@@ -320,21 +339,30 @@ type ('a, 'b) double_option = (* les () et les , sont nécessaires ! *)
     | Some of 'a * 'b
     | None
 ```
-##### Pas très utile...
-
-Il est possible de déstructurer des variants pour récupérer le contenu.
+L'utilisation se fait de la même manière que pour les variants non génériques:
 ```ocaml
-type mon_variant = 
-    | A of int
-    | B of string * string
-
-let A(x) = A 12 (* x = 12 *)
-let B(_, y, "ijkl") = B ("abcd", "efgh", "ijkl") (* y = "efgh" *)
+let a: (int, char) double_option = Some (12, 'a') (* précision du type *)
+let b: (string, float) double_option = Some ("abcd", 12.3) (* a et b sont de types différents ! *)
 ```
+
+### Les variants récursifs
+
+Un variant peut contenir un champ qui est lui-même une instance du même variant ! Cette méthode est utilisée pour représenter des structures de données.
+```ocaml
+type 'a liste = 
+  | Nil (* cas terminal (pas de récursivité ici) *)
+  | Cons of 'a * 'a liste (* cas non terminal (récursif) *)
+```
+Création d'un type `liste` générique:
+`Nil` correspond à la liste vide `[]`, et `Cons` correspond à l'opérateur `::`. 
+```ocaml
+let l: int liste = Cons(12, (Cons(13, Cons(14, Nil))))
+```
+Utilisation du type `liste` pour créer d'une liste d'entiers.
 
 ## Les records (type produit)
 
-TODO: parler de la mise un jour d'un record avec with & des variants génériques & du type d'un variant générique
+### Création et utilisation d'un record
 
 Les **records** sont des types structurés.
 ```ocaml
@@ -343,7 +371,6 @@ type point2d = { (* le nom du record doit commencer par une minuscule *)
     y: int (* le ; du dernier champ est optionnel *)
 }
 ```
-##### Création d'un record.
 
 L'instanciation d'un record se fait de la manière suivante:
 ```ocaml
@@ -352,29 +379,46 @@ let p = {
     y = 13 (* le ; du dernier champ est toujours optionnel *)
 }
 ```
-On notera que l'on a pas précisé le type de `p`. En effet, OCaml est capable de le retrouver à partir des noms des champs (ici `x` et `y`). Cependant, lorsque plusieurs *records* ont des attributs en commun, OCaml va essayer de déterminer le type en regardant quels champs sont utilisés. S'il n'y a pas assez d'informations, 
-
 
 On peut accéder aux champs individuellement avec la notation `.`:
 ```ocaml
 let x1 = p.x
 ```
 
-Enfin, les records peuvent contenir des champs modifiables, marqués `mutable`:
+### Désambiguïsation du type d'un record
+
+On notera que l'on a pas précisé le type de `p` dans l'exemple précédent. En effet, OCaml est capable de le retrouver à partir des noms des champs (ici `x` et `y`). Cependant, lorsque plusieurs *records* ont des attributs en commun, OCaml va essayer de déterminer le type en regardant quels champs sont utilisés. S'il n'y a pas assez d'informations, OCaml utilisera le dernier *record* défini dans l'ordre du code.
+```ocaml
+type t1 = {
+  a: int;
+  b: int
+}
+
+type t2 = {
+  a: int;
+  b: int
+}
+
+type t3 = {
+  a: int;
+  b: int
+}
+
+let t = {a = 1; b = 2} (* t est de type t3 car il s'agit du dernier record compatible défini *)
+```
+### Champs `mutable` d'un record
+Les records peuvent contenir des champs modifiables, marqués `mutable`:
 ```ocaml
 type a = {
     mutable x: int
 }
 ```
-
 On les met à jour avec la flèche `<-`:
 ```ocaml
 let l = {x = 12}
 l.x <- 13 (* mise à jour du champ x de l *)
 ```
-
 ### Déstructuration d'un record et *field punning*
-
 Comme pour les variants, on peut tout à fait déstructurer un record avec un pattern:
 ```ocaml
 (* record de test *)
@@ -387,7 +431,6 @@ type un_record = {
 let r = {a = 12; b = "abcd"; c = 'a'}
 let {a = _; b = str; c = 'a'} = r (* str == "abcd" *)
 ```
-
 On peut aussi remplacer la dernière ligne du code précédent par:
 ```ocaml
 let {b=str;_} = r
@@ -408,6 +451,53 @@ let r = {a = 12; b = "abcd"; c = 'a'}
 let {a;b;_} (* même effet que la dernière ligne du code précédent *)
 ```
 Cette simplification s'appelle le *field punning*.
+
+### Les records génériques
+
+Tout comme les variants, les records peuvent être paramétrés par des types génériques:
+```ocaml
+type ('a, 'b) paire = {
+    premier: 'a;
+    second: 'b
+}
+```
+##### Représentation d'une paire d'éléments de types différents.
+
+```ocaml
+let p1: (int, string) paire = {premier = 12; second = "13}
+```
+Le typage se fait de la même manière que pour les variants.
+### Mise à jour fonctionnelle d'un record
+
+Le mot-clé `with` permet de créer une nouvelle instance d'un record à partir d'une instance existante tout en modifiant un ou plusieurs champs:
+```ocaml
+type record = {
+  a: char;
+  b: int;
+  c: string;
+  d: float
+}
+
+let r = {
+  a = 'a';
+  b = 12;
+  c = "c";
+  d = 12.1
+}
+
+(* création d'un nouveau record r' à partir de r mais en changeant les valeurs de c et de d *)
+let r' = {r with c = "d"; d = 15.1}
+```
+Lorsque l'on utilise la mise à jour fonctionnelle avec un record générique, le nouveau record créé peut être d'un type différent de l'ancien:
+```ocaml
+type 'a t = {
+    a: int;
+    b: 'a
+}
+
+let r = {a = 12; b = "13"} (* r est de type "string t"*)
+let r' = {r with b = 13} (* r' est de type "int t" *)
+```
 
 # Gestion des erreurs
 
@@ -651,7 +741,7 @@ let i = f () (* appel de f avec les () pour signifier qu'il n'y a pas d'argument
 
 ### Procédures
 
-Une procédure est simplement une fonction qui ne renvoie pas d'argument, c'est-à-dire le tuple vide (comme par exemple les fonctions `print_*`). Il n'y a rien à faire de particulier lors de la définition de la **définition** de la fonction mais lors de l'appel, il faut matcher le résultat avec le tuple vide:
+Une procédure est simplement une fonction qui ne renvoie pas d'argument, c'est-à-dire le tuple vide (comme par exemple les fonctions `print_*`). Il n'y a rien à faire de particulier lors de la définition de la fonction mais lors de l'appel, il faut matcher le résultat avec le tuple vide:
 ```ocaml
 (* définition de la fonction *)
 let print_hello name = 
@@ -665,12 +755,17 @@ let () = print_hello "Paul"
 
 Pour écrire une fonction récursive en OCaml, on utilise le mot-clé `rec` entre `let` et le nom de la fonction:
 ```ocaml
-let rec factorial n = 
+let rec (* <---- ici *) factorial n = 
     if n = 0 then 1
     else if n = 1 then n
     else n * factorial (n - 1)
 ```
-##### Calcul de la factorielle de `n`
+##### Calcul de la factorielle de `n` de manière récursive
+Bien que la forme récursive d'une fonction ait en général l'avantage d'être plus courte et claire que la version itérative, elle possède deux inconvénients majeurs:
+* Elle est plus lente: on effectue plusieurs appels de fonction, contrairement à la version itérative où il n'y a en général qu'un seul appel.
+* Elle consomme plus de mémoire, au point de faire planter le programme: on sature la pile de valeurs de retour et d'appels de fonction.
+
+Il existe une solution qui permet de résoudre ces problèmes tout en écrivant le code d'une manière récursive: la **récursion terminale** (*tail call*).
 
 ## Application partielle et notion de *currying*
 
