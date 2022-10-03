@@ -156,33 +156,13 @@ Les opérateurs mathématiques **diffèrent en fonction de si les opérateurs so
 
 ## Opérateurs de comparaison
 
-|Opérateur|Commentaire|
+|Opérateur|Signification|
 |---------|-----------|
 |=|Teste l'**égalité structurelle**, c'est-à-dire l'égalité des contenus.|
 |<>|Négation de =|
 |<=, <, >, >=|Teste l'**inégalité structurelle**.|
 |==|Teste l'**égalité physique**, c'est-à-dire l'égalité de références.|
 |!=|Inverse de ==|
-
-## Opérateurs d'application
-
-L'opérateur `|>` est l'opérateur d'**application inverse**: écrire:
-```
-x |> f |> g
-```
-est équivalent à:
-```
-g (f x)
-```
-
-L'opérateur `@@` est l'opérateur d'**application**: écrire:
-```
-g @@ f @@ x
-```
-est équivalent à:
-```
-g (f x)
-```
 
 # Les conditions
 
@@ -353,12 +333,11 @@ type 'a liste =
   | Nil (* cas terminal (pas de récursivité ici) *)
   | Cons of 'a * 'a liste (* cas non terminal (récursif) *)
 ```
-Création d'un type `liste` générique:
-`Nil` correspond à la liste vide `[]`, et `Cons` correspond à l'opérateur `::`. 
+##### Création d'un type `liste` générique: `Nil` correspond à la liste vide `[]`, et `Cons` correspond à l'opérateur `::`. 
 ```ocaml
 let l: int liste = Cons(12, (Cons(13, Cons(14, Nil))))
 ```
-Utilisation du type `liste` pour créer d'une liste d'entiers.
+##### Utilisation du type `liste` pour créer d'une liste d'entiers.
 
 ## Les records (type produit)
 
@@ -467,8 +446,8 @@ type ('a, 'b) paire = {
 let p1: (int, string) paire = {premier = 12; second = "13}
 ```
 Le typage se fait de la même manière que pour les variants.
-### Mise à jour fonctionnelle d'un record
 
+### Mise à jour fonctionnelle d'un record
 Le mot-clé `with` permet de créer une nouvelle instance d'un record à partir d'une instance existante tout en modifiant un ou plusieurs champs:
 ```ocaml
 type record = {
@@ -499,13 +478,16 @@ let r = {a = 12; b = "13"} (* r est de type "string t"*)
 let r' = {r with b = 13} (* r' est de type "int t" *)
 ```
 
+## Alias de type
+```ocaml
+type nouveau_nom = ancien_nom
+```
+Les valeurs de type alias sont compatibles avec le type original.
+
 # Gestion des erreurs
 
-OCaml propose plusieurs mécanismes pour gérer les erreurs:
-
 ## Le type `result`
-
-Le module [Stdlib](https://v2.ocaml.org/api/Stdlib.html) d'OCaml définit le type somme `result` de la manière suivante:
+Défini dans l e module [Stdlib](https://v2.ocaml.org/api/Stdlib.html):
 ```ocaml
 type ('a, 'b) result =
   | Ok of 'a
@@ -544,7 +526,7 @@ let f x =
     else if x > 50 then raise (Baz ("abcd", "efgh"))
     else x * 2
 ```
-##### La présence d'exceptions n'influe pas sur le type de la fonction; ici, `f` est toujours de type `int -> int`.
+La présence d'exceptions n'influe pas sur le type de la fonction; ici, `f` est toujours de type `int -> int`.  
 Dans le code appelant, on utilise un bloc `try` avec un filtrage pour associer une exception à une action:
 ```ocaml
 let x = try (f 76) with
@@ -562,7 +544,7 @@ let sqrt x =
     assert (x >= 0.) (* vérification de la précondition x >= 0. pour le calcul de la racine *)
     ...
 ```
-Contrairement à d'autres langages, il n'est pas possible de fournir un message d'erreur personnalisé affiché lors de l'échec de l'assertion.
+##### Contrairement à d'autres langages, il n'est pas possible de fournir un message d'erreur personnalisé affiché lors de l'échec de l'assertion.
 
 # Pattern matching
 
@@ -649,6 +631,34 @@ Le contenu d'une fonction devant être une expression, il n'existe pas de mot-cl
 
 ## Utilisation d'une fonction
 
+```ocaml
+let result = fonction arg1 arg2...
+```
+En cas d'ambigüité, les `()` permettent de séparer les arguments.
+```ocaml
+let res = somme (a + b) (c + d)
+```
+
+
+## Opérateurs d'application
+L'opérateur `|>` est l'opérateur d'**application inverse**: écrire:
+```ocaml
+x |> f |> g
+```
+est équivalent à:
+```ocaml
+g (f x)
+```
+
+L'opérateur `@@` est l'opérateur d'**application**: écrire:
+```
+g @@ f @@ x
+```
+est équivalent à:
+```
+g (f x)
+```
+
 ## Fonctions anonymes
 
 Il est aussi possible de créer des fonctions anonymes: il s'agit de fonctions sans nom qui sont généralement utilisées dans des appels de fonction.  
@@ -686,8 +696,6 @@ string -> string -> int
 On commence par regarder le dernier type (`int`): il correspond au type de retour de la fonction. Ensuite, le premier type (`string`) correspond au type du premier paramètre (`a`) et le deuxième type (`string`) correspond au type du second paramètre (`b`).
 
 ## Annotation manuelle des types des paramètres et de la valeur de retour
-
-Parfois, les types des paramètres et/ou du type de retour déduits par le compilateurs ne sont pas assez précis ou ne correspondent pas à ce que l'on attend. Dans ce cas, on peut annoter la fonction pour préciser les types des paramètres et/ou le type de retour:
 ```ocaml
 let somme (a: int) (b: int) = (* les () sont obligatoires ! *) a + b
 ```
@@ -728,20 +736,15 @@ la fonction `prod_eq` vérifie que le produit des deux éléments d'une paire d'
 ## Fonctions sans argument et procédures
 
 ### Fonctions sans argument
-
-Pour écrire une fonction qui ne prend pas d'argument, on utilisera le tuple vide (type `unit`) à la place des paramètres:
+On utilise `()` pour remplacer les paramètres:
 ```ocaml
-let f () =  (* définition de la fonction f *)
+let f () = (* lors de la définition *)
     42
-```
-Lors de l'appel, on utilise également le tuple vide:
-```ocaml
-let i = f () (* appel de f avec les () pour signifier qu'il n'y a pas d'argument *)
+
+let i = f () (* lors de l'appel *)
 ```
 
 ### Procédures
-
-Une procédure est simplement une fonction qui ne renvoie pas d'argument, c'est-à-dire le tuple vide (comme par exemple les fonctions `print_*`). Il n'y a rien à faire de particulier lors de la définition de la fonction mais lors de l'appel, il faut matcher le résultat avec le tuple vide:
 ```ocaml
 (* définition de la fonction *)
 let print_hello name = 
@@ -753,23 +756,93 @@ let () = print_hello "Paul"
 
 ## Fonctions récursives et *tail-call optimization*
 
-Pour écrire une fonction récursive en OCaml, on utilise le mot-clé `rec` entre `let` et le nom de la fonction:
+Définition d'une fonction récursive avec le mot-clé `rec`:
 ```ocaml
 let rec (* <---- ici *) factorial n = 
     if n = 0 then 1
     else if n = 1 then n
     else n * factorial (n - 1)
 ```
-##### Calcul de la factorielle de `n` de manière récursive
-Bien que la forme récursive d'une fonction ait en général l'avantage d'être plus courte et claire que la version itérative, elle possède deux inconvénients majeurs:
-* Elle est plus lente: on effectue plusieurs appels de fonction, contrairement à la version itérative où il n'y a en général qu'un seul appel.
-* Elle consomme plus de mémoire, au point de faire planter le programme: on sature la pile de valeurs de retour et d'appels de fonction.
+##### Calcul de la factorielle de `n` de manière récursive.
 
-Il existe une solution qui permet de résoudre ces problèmes tout en écrivant le code d'une manière récursive: la **récursion terminale** (*tail call*).
+### Récursion terminale
+Les fonctions récursives terminales sont optimisées par le compilateur (transformées en boucles).
 
-## Application partielle et notion de *currying*
+## Application partielle
 
-## Arguments nommés et arguments optionnels
+## Arguments nommés
+
+### Définition d'arguments nommés:
+```ocaml
+let ratio ~num ~denom = 
+    num /. denom (* pas besoin de ~ à l'utilisation *)
+```
+Lors de l'appel, l'ordre de précision des arguments nommés n'importe pas:
+```ocaml
+ratio ~denom:20. ~num:12.
+```
+Mais ils doivent être tous renseignés, sinon il s'agit d'une application partielle.
+
+### Label punning
+Au lieu d'écrire:
+```ocaml
+let num = 12. in
+let denom = 20. in
+ratio ~num:num ~denom:denom
+```
+on peut écrire
+```ocaml
+let num = 12. in
+let denom = 20. in
+ratio ~num ~denom (* changements ici *)
+```
+lorsque les arguments ont les mêmes noms que les paramètres formels.
+
+### Type d'une fonction possédant des arguments nommés
+Précision du nom de l'argument nommé dans la signature:
+```ocaml
+num:float -> denom:float -> float
+```
+##### Type de la fonction `ratio`.
+
+### Renommage d'arguments nommés
+```ocaml
+let ratio' ~num:n ~denom:d =
+    n /. d
+```
+`num` a été renommé en `n` et `denom` en `d`. `num` et `denom` ne sont plus utilisables dans le corps de la fonction.  
+Cependant, le type contient toujours les noms `num` et `denom`:
+```ocaml
+num:float -> denom:float -> float
+```
+
+### Combinaisons d'arguments positionnels et d'arguments nommés
+Les arguments positionnels doivent être précisés dans l'ordre **entre eux** et les arguments nommés peuvent être précisés dans n'importe quel ordre.
+
+## Arguments optionnels
+Un argument optionnel est un argument nommé de type `option` qui peut ne pas être renseigné.
+
+### Définitions d'arguments optionnels
+```ocaml
+let concat ?sep first second = (* ? pour définir un argument optionnel *)
+    let sep' = match sep with (* ? inutile dans le corps de la fonction *)
+        | None -> ""
+        | Some s -> s
+    in
+    first ^ sep' ^ second
+```
+Lors de l'appel, on peut:
+* ne pas préciser de valeur pour l'argument optionnel: il vaut alors `None`
+* lui préciser une valeur avec `~` (**label punning applicable**):
+```ocaml
+concat ~sep:" " "abcd" "efgh"
+```
+* lui préciser une valeur avec `?` (la valeur doit être de type `'a option`, **label punning applicable**)
+```ocaml
+concat ?sep:(Some " ") "abcd" "efgh"
+```
+
+### Valeur par défaut d'un argument optionnel
 
 # Création d'opérateurs personnalisés
 
@@ -777,7 +850,15 @@ Il existe une solution qui permet de résoudre ces problèmes tout en écrivant 
 
 **Le module [Pervasives](https://v2.ocaml.org/releases/4.02/htmlman/libref/Pervasives.html) est le module ouvert de base.**
 
-# Interfaçage avec le C 
+# Fonctionnalités impératives
+
+## Boucles
+
+## Références
+
+# Interfaçage avec le C
+
+# Liste des mots-clés
 
 # Ressources
 
