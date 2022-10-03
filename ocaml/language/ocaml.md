@@ -650,6 +650,8 @@ est équivalent à:
 g (f x)
 ```
 
+//TODO: parler du lien avec l'application partielle
+
 L'opérateur `@@` est l'opérateur d'**application**: écrire:
 ```
 g @@ f @@ x
@@ -769,6 +771,13 @@ let rec (* <---- ici *) factorial n =
 Les fonctions récursives terminales sont optimisées par le compilateur (transformées en boucles).
 
 ## Application partielle
+L'application partielle est possible car en OCaml, toutes les fonctions currifiées:
+```ocaml
+let somme a b = a + b
+let somme_2 = somme 2 (* application partielle *)
+(* somme est de type int -> int -> int *)
+(* somme_2 est de type int -> int *)
+```
 
 ## Arguments nommés
 
@@ -804,6 +813,8 @@ Précision du nom de l'argument nommé dans la signature:
 num:float -> denom:float -> float
 ```
 ##### Type de la fonction `ratio`.
+
+### Typage explicite d'un argument nommé
 
 ### Renommage d'arguments nommés
 ```ocaml
@@ -842,23 +853,95 @@ concat ~sep:" " "abcd" "efgh"
 concat ?sep:(Some " ") "abcd" "efgh"
 ```
 
+### Type d'une fonction possédant des arguments optionnels
+
+Comme pour les arguments nommés, le nom du paramètre optionnel est présent dans la signature mais avec `?` au lieu de `~`:
+```ocaml
+?sep:string -> string -> string -> string
+```
+##### Type de la fonction `concat`.
+
 ### Valeur par défaut d'un argument optionnel
 
+```ocaml
+let concat ?(sep=" ") a b = 
+    a ^ sep ^ b
+```
+La valeur par défaut est utilisée lorsque le paramètre vaut `None` (n'est pas renseigné ou fixé explicitement).
+
 # Création d'opérateurs personnalisés
+
+## Opérateurs préfixes (=> unaires)
+
+Doit commencer par `!`, `?` ou `~` (peut être suivi par un ou plusieurs symboles parmi `~ ! ? $ & * + - / = > @ ^ |`)
+
+## Opérateurs infixes (=> binaires)
+
+Doit commencer par `$`, `&`, `*`, `+`, `-`, `/`, `=`, `>`, `@`, `^`, `|`, `%`, `<` (peut être suivi par un ou plusieurs symboles parmi `~ ! ? $ & * + - / = > @ ^ |`)
+
+## Définition d'une fonction opérateur
+
+Mettre le nom entre ().
+```ocaml
+let r = 
+    let (<=>) = Stdlib.compare in
+    -1 <=> 13
+```
+**Si l'opérateur commence par \*, mettre un espace entre `(` et `*`, sinon l'opérateur sera parsé comme un commentaire.**
 
 # Modules
 
 **Le module [Pervasives](https://v2.ocaml.org/releases/4.02/htmlman/libref/Pervasives.html) est le module ouvert de base.**
 
-# Fonctionnalités impératives
+## Compilation séparée
 
-## Boucles
+Un fichier représente un module, où le nom du module est le nom du fichier avec la première lettre en majuscule:
+```
+monmodule.ml -> Monmodule
+```
 
-## Références
+## Flot d'exécution
 
-# Interfaçage avec le C
+Les expressions 
 
-# Liste des mots-clés
+## Utilisation de modules
+
+Accéder au contenu d'un module `M` avec `.`:
+```ocaml
+M.fonction
+```
+
+### Import global
+```ocaml
+open Module (* se place dans le bloc global *)
+(* tout le contenu du module Module est disponible jusqu'à la fin du module *)
+```
+
+### Import local
+* Avec `let open`:
+```ocaml
+let open Module in
+<expression>
+(* le contenu de Module est importé jusqu'à la fin du bloc *)
+```
+* Avec `Module.()`
+```ocaml
+Module.(
+    (* code dans lequel le contenu de Module est importé *)
+)
+```
+
+## Définition d'un module
+
+Le nom d'un module doit commencer par une majuscule:
+```ocaml
+module NomModule = struct
+    (* définitions... *)
+end
+```
+Si ce module se trouve dans un fichier `a.ml`, on y accède depuis un autre fichier par:
+`A.NomModule`.
+//TODO: http://wide.land/modules/structures.html
 
 # Ressources
 
