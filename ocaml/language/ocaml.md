@@ -893,19 +893,7 @@ let r =
 
 **Le module [Pervasives](https://v2.ocaml.org/releases/4.02/htmlman/libref/Pervasives.html) est le module ouvert de base.**
 
-## Compilation séparée
-
-Un fichier représente un module, où le nom du module est le nom du fichier avec la première lettre en majuscule:
-```
-monmodule.ml -> Monmodule
-```
-
-## Flot d'exécution
-
-Les expressions 
-
 ## Utilisation de modules
-
 Accéder au contenu d'un module `M` avec `.`:
 ```ocaml
 M.fonction
@@ -930,6 +918,13 @@ Module.(
     (* code dans lequel le contenu de Module est importé *)
 )
 ```
+Lorsque deux modules sont ouverts, les définitions du dernier masquent celles du premier (si applicable).
+
+### Renommage d'un module
+
+```ocaml
+module NouveauNom = AncienNom
+```
 
 ## Définition d'un module
 
@@ -940,7 +935,114 @@ module NomModule = struct
 end
 ```
 Si ce module se trouve dans un fichier `a.ml`, on y accède depuis un autre fichier par:
-`A.NomModule`.
+`A.NomModule`.  
+Un module peut contenir:
+* des valeurs (variables et fonctions)
+* des valeurs externes (`external`)
+* des types
+* des exceptions
+* des instructions `open`
+* des instructions `include`
+* d'autres modules
+* des classes
+
+## Définition d'un module signature
+
+Un module signature est une interface implémentable par un (ou plusieurs) module(s):
+```ocaml
+module type Signature = sig
+    val f: int -> int (* il existe une fonction f prenant un entier et renvoyant un entier *)
+
+    type enum (* il existe un type nommé enum *)
+
+    (* d'autres déclarations... *)
+end
+```
+
+Implémentation d'un module signature:
+```ocaml
+module M: Signature = struct
+    let f x = x
+
+    type enum = A | B
+
+
+    (* toutes les déclarations de la signature doivent être implémentées + ce qu'on veut *)
+end
+```
+
+## Définition d'un module ET de sa signature en même temps
+```ocaml
+module M: sig
+    (* déclarations *)
+end
+=
+struct
+    (* implémentation *)
+end
+```
+Mais ceci n'est pas idiomatique, on préfère séparer signature et implémentation.
+
+## Masquage de valeurs
+Est accessible par un autre module seulement ce qui est défini dans l'interface du module actuel:
+```ocaml
+module M: sig
+    val f: int -> int
+end
+=
+struct
+    let f x = 2 * x (* n'existe pas dans la signature: elle est donc accessible que dans ce module *)
+    let g x = x
+end
+```
+
+## Le mot-clé `include`
+Permet d'ajouter et d'exporter dans un module les déclarations d'un autre module:
+```ocaml
+module M = struct
+    include AutreModule
+    (* ... *)
+end
+```
+Cette fonctionnalité permet d'étendre les fonctionnalités de modules existants et même de les remplacer:
+```ocaml
+module M = struct
+  include List
+  let ma_fonc i = 2*i
+end
+```
+##### Ajout d'une fonction au contenu du module List
+
+```ocaml
+module M = struct
+  include List
+      
+  let mem x l = 
+    match l with
+      [] -> false
+    | hd :: tl -> if hd = x then true else mem x tl
+end
+
+open M
+(* ... *)
+```
+Notre fonction `mem` remplace la fonction `mem` du module `List` !  
+**Attention: si l'une des fonctions du module `List` fait appel à `mem`, ce sera la fonction originale qui sera appelée.** 
+
+# Les foncteurs
+
+# Modules et compilation séparée
+
+Un fichier `.ml` représente un module, où le nom du module est le nom du fichier avec la première lettre en majuscule:
+```
+monmodule.ml -> Monmodule
+```
+
+S'il existe un fichier d'extension `.mli` du même nom, alors le contenu de ce fichier servira de signature.
+
+## Unité de compilation
+Une paire `.ml`/`.mli` constitue une *unité de compilation*. (S'il n'y a pas de fichier `.mli`, alors le fichier `.ml` sera une unité de compilation à lui tout seul).
+
 //TODO: http://wide.land/modules/structures.html
 
 # Ressources
