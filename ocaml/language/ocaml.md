@@ -891,7 +891,7 @@ let r =
 
 # Modules
 
-**Le module [Pervasives](https://v2.ocaml.org/releases/4.02/htmlman/libref/Pervasives.html) est le module ouvert de base.**
+**Le module [Stdlib](https://v2.ocaml.org/api/Stdlib.html) est le module ouvert de base.**
 
 ## Utilisation de modules
 Accéder au contenu d'un module `M` avec `.`:
@@ -991,8 +991,8 @@ module M: sig
 end
 =
 struct
-    let f x = 2 * x (* n'existe pas dans la signature: elle est donc accessible que dans ce module *)
-    let g x = x
+    let f x = 2 * x
+    let g x = x (* n'existe pas dans la signature: elle est donc accessible que dans ce module *)
 end
 ```
 
@@ -1042,6 +1042,8 @@ S'il existe un fichier d'extension `.mli` du même nom, alors le contenu de ce f
 
 ## Unité de compilation
 Une paire `.ml`/`.mli` constitue une *unité de compilation*. (S'il n'y a pas de fichier `.mli`, alors le fichier `.ml` sera une unité de compilation à lui tout seul).
+
+Dans un fichier `.mli`, **il n'y a pas besoin d'entourer les déclarations du module par `module type NomModule = sig ... end`.**
 
 //TODO: http://wide.land/modules/structures.html
 
