@@ -339,6 +339,11 @@ let l: int liste = Cons(12, (Cons(13, Cons(14, Nil))))
 ```
 ##### Utilisation du type `liste` pour créer d'une liste d'entiers.
 
+### Variant vide
+```ocaml
+type vide = | (* code valide ! *)
+```
+
 ## Les records (type produit)
 
 ### Création et utilisation d'un record
@@ -698,23 +703,28 @@ string -> string -> int
 On commence par regarder le dernier type (`int`): il correspond au type de retour de la fonction. Ensuite, le premier type (`string`) correspond au type du premier paramètre (`a`) et le deuxième type (`string`) correspond au type du second paramètre (`b`).
 
 ## Annotation manuelle des types des paramètres et de la valeur de retour
+
+### Annotation des types des paramètres
 ```ocaml
 let somme (a: int) (b: int) = (* les () sont obligatoires ! *) a + b
 ```
-##### Annotation des types des paramètres
 
+### Annotation du type de retour
+**Avant** la définition:
 ```ocaml
 let somme a b : int = (* pas de () ici *) a + b
 ```
-##### Annotation du type de retour
+**Après** la définition:
+```ocaml
+let inc x = (x + 1: int)
+```
 
+### Combinaison des types des paramètres et du type de retour:
 ```ocaml
 let somme (a: int) (b: int) : int = a + b
 ```
-##### Annotation des paramètres ET du type de retour
 
-Les mêmes principes s'appliquent pour les fonctions anonymes:
- 
+### Annotation des types pour les fonctions anonymes: 
 * Pour la forme "simplifiée": 
 ```ocaml
 let somme = fun (a: int) (b: int) : int -> a + b
@@ -1030,7 +1040,60 @@ Notre fonction `mem` remplace la fonction `mem` du module `List` !
 **Attention: si l'une des fonctions du module `List` fait appel à `mem`, ce sera la fonction originale qui sera appelée.** 
 
 # Les foncteurs
+Fonction qui prend un ou plusieurs modules en paramètre et en renvoie un nouveau.
+```ocaml
+module type X = sig
+    val x: int
+end
 
+module IncX (M: X) = struct (* foncteur, M est un module de type X. La précision des types est OBLIGATOIRE ! *)
+    let x = M.x + 1
+end
+```
+### Application du foncteur
+```ocaml
+module A = struct
+    let x = 0
+end
+
+module B = IncX (A) (* B.x = 1 *)
+module C = IncX (B) (* C.x = 2 *)
+```
+### Plusieurs modules en paramètre du foncteur
+```ocaml
+module type X = sig
+  val x: int
+end
+
+module type Y = sig
+  val y: int
+end
+
+module type P = sig
+    val x: int
+    val y: int
+end
+
+module Pair (A: X) (B: Y) : P = (* annotation du type de retour possible *) struct
+  let x = A.x
+  let y = B.y
+end
+
+module Result = Pair (struct let x = 2 end) (struct let y = 5 end) (* modules anonymes en paramètre *)
+```
+
+### Foncteurs anonymes
+Le mot-clé `functor` agit comme le mot-clé `fun` mais pour les foncteurs:
+```ocaml
+module F = functor (A: X) -> struct (* utilisation de -> comme pour les fonctions anonymes *)
+    ...
+end
+
+(* équivalent à: *)
+module F (A: X) = struct
+    ...
+end
+```
 # Modules et compilation séparée
 
 Un fichier `.ml` représente un module, où le nom du module est le nom du fichier avec la première lettre en majuscule:
