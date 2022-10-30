@@ -52,6 +52,12 @@ Suivent la norme **IEEE-754**.
 * `f`/`F` pour un `Float`
 * `u`/`U` pour un nombre non signé
 * `L` pour un `Long`
+```kt
+val float = 12.2F
+val unsignedInt = 12U
+val long = 12L
+val unsignedLong = 15UL
+```
 
 ### Lisibilité
 Les nombres entiers comme flottants peuvent contenir des `_` pour améliorer la lisibilité:
@@ -65,6 +71,14 @@ val v = 1_2_3 //v == 123
 val a = 0xFF
 val b = 0b10111
 ```
+
+### Non-compatibilité des différents types numériques
+**Il n'y a pas de cast implicite entre les différents types de nombres !!!**
+```kt
+val a = 12 //Int
+val b: Short = a //échoue, un Short n'est pas un Int
+```
+Valable pour les assignations, les appels aux fonctions, etc.
 
 ## Booléens
 Type `Boolean`, valeurs `true` et `false`.
