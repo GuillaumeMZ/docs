@@ -9,13 +9,10 @@
 ## Définition
 ### Variables immutables
 ```kt
-val nom: Int //déclaration et typage
+val nom: Int //déclaration et typage; le type est obligatoire dans ce cas !
 nom = 12
 
 val nom: Int = 12 //déclaration et initialisation en une ligne
-
-val nom //déclaration et omission du type
-nom = 12
 
 val nom = 12 //omission du type
 ```
@@ -99,6 +96,7 @@ val c = '\uCODE`
 # Opérateurs
 ## Opérateurs arithmétiques
 * `+`, `-`, `*`, `/`, `%`
+* `+` et `-` **unaires**
 * `+=`, `-=`, `*=`, `/=`, `%=`
 * `++`, `--` (**préfixes et postfixes**)
 
@@ -113,6 +111,11 @@ val c = '\uCODE`
 
 ## Opérateurs logiques
 `&&` (et **paresseux**), `||` (ou **paresseux**), `!` (non)
+
+# Structures de contrôle
+## Conditions
+### If/Else
+
 
 # Packages
 Le package d'un fichier se déclare comme en Java; cependant, il n'y a pas besoin de placer le fichier dans l'arborescence correspondante comme en Java
