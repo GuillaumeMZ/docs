@@ -115,6 +115,26 @@ val c = '\uCODE`
 # Structures de contrôle
 ## Conditions
 ### If/Else
+```kt
+if(condition) {
+    //code
+}
+else {
+    //code
+}
+```
+S'il n'y a qu'une seule expression/instruction, les `{}` sont optionnelles.  
+`if` peut être utilisé comme une expression:
+```kt
+val l = 
+    if(condition)
+        12
+    else {
+        print("else")
+        15 //dans le cas d'un bloc, la dernière expression est la valeur de retour
+    }
+```
+Dans ce cas, `else` est obligatoire.
 
 
 # Packages
